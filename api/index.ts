@@ -1,43 +1,60 @@
+import { AutoDTO } from "@api/AutoDTO";
 import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
+import { randomUUID } from "node:crypto";
 
 const typeDefs = `#graphql
-  type Car {
+  type Auto {
+    id: UUID
     make: String
     model: String
     year: Int
     features: [String]
   }
 
-  type CarResponse {
+  type AutoResponse {
     success: Boolean
     message: String
   }
 
   type Query {
-    cars: [Car]
+    autos: [Auto]
   }
 
   type Mutation {
-    addCar(make: String!, model: String!, year: Int!, features: [String]): CarResponse
+    addAuto(make: String!, model: String!, year: Int!, features: [String]): AutoResponse
   }
 `;
 
-const cars = [
+const autos: AutoDTO[] = [
   {
+    id: randomUUID(),
     make: "Honda",
     model: "Civic",
     year: 2022,
     features: ["Bluetooth", "Backup Camera"],
   },
+  {
+    id: randomUUID(),
+    make: "Toyota",
+    model: "Camry",
+    year: 2021,
+    features: ["Sunroof", "Leather Seats"],
+  },
 ];
 
 const resolvers = {
   Query: {
-    cars: () => cars,
+    autos: () => autos,
   },
   Mutation: {
-    
+    addAuto: (_: never, { make, model, year, features }: AutoDTO) => {
+      autos.push({ id: randomUUID(), make, model, year, features });
+      return {
+        success: true,
+        message: "Auto added successfully",
+      };
+    } 
   },
 };
 

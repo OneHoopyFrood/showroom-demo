@@ -12,7 +12,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Cars",
+  title: "Autos",
 };
 
 export default function RootLayout({
@@ -32,7 +32,7 @@ export default function RootLayout({
         <footer className="mt-8">
           <hr className="border-gray-700 mb-4" />
           <p className="text-gray-500 text-sm text-center mb-4">
-            &copy; {new Date().getFullYear()} Cars App. All rights reserved.
+            &copy; {new Date().getFullYear()} Showroom App. All rights reserved.
           </p>
         </footer>
       </body>
