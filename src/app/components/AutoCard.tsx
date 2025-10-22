@@ -1,8 +1,8 @@
-import { AutoDTO } from "@api/AutoDTO";
-import Image from "next/image";
+import { AutoDTO } from '@api/AutoDTO'
+import Image from 'next/image'
 
 interface AutoCardProps {
-  auto: AutoDTO;
+  auto: AutoDTO
 }
 
 export default function AutoCard({ auto }: AutoCardProps) {
@@ -28,5 +28,5 @@ export default function AutoCard({ auto }: AutoCardProps) {
         ))}
       </ul>
     </div>
-  );
+  )
 }
