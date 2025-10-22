@@ -9,7 +9,6 @@
     "next:start": "next start",
     "next:lint": "next lint",
     "api:run": "tsx api/index.ts",
-    "api:seed": "tsx api/seed.ts",
     "app:dev": "yarn api:run & yarn next:dev"
   },
   "dependencies": {
