@@ -108,8 +108,8 @@ export function AutoAddEditModal({
             <input
               type="text"
               id="features"
-              value={formData.features.join(', ')}
-              onChange={(e) =>
+              defaultValue={formData.features.join(', ')}
+              onBlur={(e) =>
                 setFormData({
                   ...formData,
                   features: e.target.value
