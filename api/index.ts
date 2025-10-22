@@ -1,3 +1,4 @@
+import { AutoActionResponse } from "@api/AutoActionResponse";
 import { AutoDTO } from "@api/AutoDTO";
 import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
@@ -5,7 +6,7 @@ import { randomUUID } from "node:crypto";
 
 const typeDefs = `#graphql
   type Auto {
-    id: UUID
+    id: ID
     make: String
     model: String
     year: Int
@@ -43,18 +44,61 @@ const autos: AutoDTO[] = [
   },
 ];
 
+const addAuto = (
+  _: never,
+  { make, model, year, features }: AutoDTO
+): AutoActionResponse => {
+  autos.push({ id: randomUUID(), make, model, year, features });
+  return {
+    success: true,
+    message: "Auto added successfully",
+  };
+};
+
+const deleteAuto = (_: never, { id }: { id: string }): AutoActionResponse => {
+  const index = autos.findIndex((auto) => auto.id === id);
+  if (index === -1) {
+    return {
+      success: false,
+      message: "Auto not found",
+    };
+  }
+  autos.splice(index, 1);
+  return {
+    success: true,
+    message: "Auto deleted successfully",
+  };
+};
+
+const updateAuto = (
+  _: never,
+  { id, make, model, year, features }: AutoDTO
+): AutoActionResponse => {
+  const auto = autos.find((auto) => auto.id === id);
+  if (!auto) {
+    return {
+      success: false,
+      message: "Auto not found",
+    };
+  }
+  auto.make = make;
+  auto.model = model;
+  auto.year = year;
+  auto.features = features;
+  return {
+    success: true,
+    message: "Auto updated successfully",
+  };
+}
+
 const resolvers = {
   Query: {
     autos: () => autos,
   },
   Mutation: {
-    addAuto: (_: never, { make, model, year, features }: AutoDTO) => {
-      autos.push({ id: randomUUID(), make, model, year, features });
-      return {
-        success: true,
-        message: "Auto added successfully",
-      };
-    } 
+    addAuto,
+    deleteAuto,
+    updateAuto,
   },
 };
 
