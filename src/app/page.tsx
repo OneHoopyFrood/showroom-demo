@@ -1,6 +1,7 @@
 'use client'
 
 import { AutoDTO } from '@api/AutoDTO'
+import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import AutoCard from './components/AutoCard'
 import { fetchAutos } from './services/AutoService'
@@ -23,7 +24,9 @@ export default function Page() {
 
       <div className="w-full flex overflow-x-auto space-x-4 pb-4">
         {autos.map((auto) => (
-          <AutoCard key={auto.id} auto={auto} />
+          <Link href={`/showroom/${auto.id}`} key={auto.id}>
+            <AutoCard key={auto.id} auto={auto} />
+          </Link>
         ))}
       </div>
     </div>

@@ -24,6 +24,7 @@ const typeDefs = `#graphql
   }
 
   type Query {
+    auto(id: ID!): Auto
     autos: [Auto]
   }
 
@@ -100,6 +101,7 @@ const updateAuto = (
 
 const resolvers = {
   Query: {
+    auto: (_: never, { id }: { id: string }) => autos.find((a) => a.id === id),
     autos: () => autos,
   },
   Mutation: {

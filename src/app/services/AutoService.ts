@@ -29,6 +29,27 @@ const autoApiFetch = async (query: string, variables?: object) => {
 }
 
 /**
+ * Fetches a single auto by ID from the API
+ * @param id The ID of the auto to fetch
+ * @returns A promise that resolves to an AutoDTO object or null if not found
+ */
+export const fetchAutoById = async (id: string): Promise<AutoDTO | null> => {
+  const query = `#graphql
+        query Auto($id: ID!) {
+          auto(id: $id) {
+            id
+            make
+            model
+            year
+            features
+          }
+        }`
+
+  const res = await autoApiFetch(query, { id })
+  return res.data.auto || null
+}
+
+/**
  * Fetches the list of autos from the API
  * @returns A promise that resolves to an array of AutoDTO objects
  */

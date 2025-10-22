@@ -1,6 +1,7 @@
 'use client'
 
 import { AutoDTO } from '@api/AutoDTO'
+import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { ActionButton } from '../components/ActionButton'
 import {
@@ -74,6 +75,7 @@ export default function Page() {
             <th>Make</th>
             <th>Year</th>
             <th>Features</th>
+            <th>Showroom page</th>
           </tr>
         </thead>
         <tbody>
@@ -110,6 +112,11 @@ export default function Page() {
                     <li key={index}>{feature}</li>
                   ))}
                 </ul>
+              </td>
+              <td>
+                <Link href={`/showroom/${auto.id}`} className="text-blue-500">
+                  View in Showroom
+                </Link>
               </td>
             </tr>
           ))}
