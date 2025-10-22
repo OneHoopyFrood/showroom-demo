@@ -1,21 +1,40 @@
 'use client'
 
 import { AutoDTO } from '@api/AutoDTO'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 interface AutoAddModalProps {
   onClose: () => void
-  onSubmit: (auto: Omit<AutoDTO, 'id'>) => Promise<void>
+  onSubmit: (auto: AutoDTO) => Promise<void>
   isOpen: boolean
+  auto?: AutoDTO
 }
 
-export function AutoAddModal({ onClose, onSubmit, isOpen }: AutoAddModalProps) {
-  const [formData, setFormData] = useState<Omit<AutoDTO, 'id'>>({
-    make: '',
-    model: '',
-    year: new Date().getFullYear(),
-    features: [],
-  })
+const blankAuto: AutoDTO = {
+  make: '',
+  model: '',
+  year: new Date().getFullYear(),
+  features: [],
+}
+
+export function AutoAddEditModal({
+  onClose,
+  onSubmit,
+  isOpen,
+  auto,
+}: AutoAddModalProps) {
+  const [formData, setFormData] = useState<AutoDTO>(
+    Object.assign({}, blankAuto)
+  )
+
+  // Update with the prop
+  useEffect(() => {
+    if (auto) {
+      setFormData(auto)
+    } else {
+      setFormData(Object.assign({}, blankAuto))
+    }
+  }, [auto])
 
   if (!isOpen) return null
 
@@ -31,7 +50,9 @@ export function AutoAddModal({ onClose, onSubmit, isOpen }: AutoAddModalProps) {
   return (
     <div className="fixed inset-0 backdrop-blur-xs flex items-center justify-center">
       <div className="bg-gray-800 text-gray-50 p-6 rounded-lg w-96">
-        <h2 className="text-2xl font-bold mb-4">Add New Auto</h2>
+        <h2 className="text-2xl font-bold mb-4">
+          {auto ? 'Edit Auto' : 'Add New Auto'}
+        </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="make" className="block text-sm font-mediu">
@@ -113,7 +134,7 @@ export function AutoAddModal({ onClose, onSubmit, isOpen }: AutoAddModalProps) {
               type="submit"
               className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md hover:bg-indigo-700 cursor-pointer"
             >
-              Add Auto
+              {auto ? 'Save Changes' : 'Add Auto'}
             </button>
           </div>
         </form>

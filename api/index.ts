@@ -4,6 +4,11 @@ import { ApolloServer } from '@apollo/server'
 import { startStandaloneServer } from '@apollo/server/standalone'
 import { randomUUID } from 'node:crypto'
 
+/**
+ * For demonstration purposes, we'll use an in-memory array to store autos.
+ * In a real application, this would interface with a database.
+ */
+
 const typeDefs = `#graphql
   type Auto {
     id: ID

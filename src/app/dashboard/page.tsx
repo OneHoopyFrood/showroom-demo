@@ -3,12 +3,18 @@
 import { AutoDTO } from '@api/AutoDTO'
 import { useEffect, useState } from 'react'
 import { ActionButton } from '../components/ActionButton'
-import { AutoAddModal } from '../components/AutoAddModal'
-import { addAuto, fetchAutos } from '../services/AutoService'
+import {
+  addAuto,
+  deleteAuto,
+  fetchAutos,
+  updateAuto,
+} from '../services/AutoService'
+import { AutoAddEditModal } from './AutoAddEditModal'
 
 export default function Page() {
   const [autos, setAutos] = useState<AutoDTO[]>([])
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [maybeAuto, setMaybeAuto] = useState<AutoDTO | undefined>(undefined)
 
   useEffect(() => {
     ;(async () => {
@@ -16,11 +22,33 @@ export default function Page() {
     })()
   }, [])
 
-  const handleAddAuto = async (auto: Omit<AutoDTO, 'id'>) => {
+  const handleAddEditAuto = async (auto: AutoDTO) => {
     try {
-      const result = await addAuto(auto)
+      const action = auto.id ? updateAuto : addAuto
+      const result = await action(auto)
       if (result.success) {
-        alert('Auto added successfully!')
+        alert(`Auto ${auto.id ? 'updated' : 'added'} successfully!`)
+        setAutos(await fetchAutos()) // Refresh the list
+      } else {
+        alert(`Error: ${result.message}`)
+      }
+    } catch (error) {
+      alert(
+        `Error: ${
+          error instanceof Error ? error.message : 'Unknown error occurred'
+        }`
+      )
+    }
+  }
+
+  const handleDeleteAuto = async (auto: AutoDTO) => {
+    try {
+      if (!auto.id) {
+        throw new Error('Auto ID is missing')
+      }
+      const result = await deleteAuto(auto.id)
+      if (result.success) {
+        alert(`${auto.year} ${auto.make} ${auto.model} deleted`)
         setAutos(await fetchAutos()) // Refresh the list
       } else {
         alert(`Error: ${result.message}`)
@@ -55,17 +83,19 @@ export default function Page() {
                 <div className="flex items-center pr-2">
                   <ActionButton
                     type="delete"
-                    onClick={async () => {
-                      // TODO: replace with real delete handler (call API, update state)
-                      console.log('delete', auto.id)
+                    onClick={() => {
+                      if (!auto.id) {
+                        throw new Error('Auto ID is missing')
+                      }
+                      handleDeleteAuto(auto)
                     }}
                     ariaLabel={`Delete ${auto.make} ${auto.model}`}
                   />
                   <ActionButton
                     type="edit"
                     onClick={() => {
-                      // TODO: replace with real edit handler (open form/modal or navigate)
-                      console.log('edit', auto.id)
+                      setMaybeAuto(auto)
+                      setIsModalOpen(true)
                     }}
                     ariaLabel={`Edit ${auto.make} ${auto.model}`}
                   />
@@ -89,20 +119,27 @@ export default function Page() {
             <td colSpan={6} className="py-4 border-none">
               <ActionButton
                 type="add"
-                onClick={() => setIsAddModalOpen(true)}
+                onClick={() => {
+                  setMaybeAuto(undefined)
+                  setIsModalOpen(true)
+                }}
                 ariaLabel="Add New Auto"
               >
                 Add a new auto
               </ActionButton>
-              <AutoAddModal
-                isOpen={isAddModalOpen}
-                onClose={() => setIsAddModalOpen(false)}
-                onSubmit={handleAddAuto}
-              />
             </td>
           </tr>
         </tfoot>
       </table>
+      <AutoAddEditModal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false)
+          setMaybeAuto(undefined)
+        }}
+        onSubmit={handleAddEditAuto}
+        auto={maybeAuto}
+      />
     </div>
   )
 }

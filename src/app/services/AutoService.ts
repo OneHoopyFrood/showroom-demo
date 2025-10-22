@@ -10,7 +10,7 @@ const baseHeaders = {
 /**
  * Generic function to perform GraphQL API fetches to the Auto service
  */
-const autoApiFetch = async (query: string, variables?: Record<string, any>) => {
+const autoApiFetch = async (query: string, variables?: object) => {
   const response = await fetch(API_URL, {
     method: 'POST',
     headers: baseHeaders,
@@ -36,6 +36,7 @@ export const fetchAutos = async (): Promise<AutoDTO[]> => {
   const query = `#graphql
         query Query {
           autos {
+            id
             make
             model
             year
@@ -75,13 +76,34 @@ export const addAuto = async (
  */
 export const deleteAuto = async (id: string): Promise<AutoActionResponse> => {
   const query = `#graphql
-    mutation DeleteAuto($id: ID!) {
+    mutation Mutation($id: ID!) {
       deleteAuto(id: $id) {
-        success
         message
+        success
       }
-    `
+    }`
 
   const response = await autoApiFetch(query, { id })
   return response.data.deleteAuto
+}
+
+/**
+ * Updates an existing auto by ID
+ * @param id The ID of the auto to update
+ * @param auto Updated auto data without ID
+ * @returns A promise that resolves to the AutoActionResponse
+ */
+export const updateAuto = async (
+  auto: AutoDTO
+): Promise<AutoActionResponse> => {
+  const query = `#graphql
+    mutation UpdateAuto($id: ID!, $make: String!, $model: String!, $year: Int!, $features: [String]) {
+      updateAuto(id: $id, make: $make, model: $model, year: $year, features: $features) {
+        message
+        success
+      }
+    }`
+
+  const response = await autoApiFetch(query, auto)
+  return response.data.updateAuto
 }
