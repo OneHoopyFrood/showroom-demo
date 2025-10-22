@@ -1,24 +1,87 @@
-import { AutoDTO } from "@api/AutoDTO";
+import { AutoActionResponse } from '@api/AutoActionResponse'
+import { AutoDTO } from '@api/AutoDTO'
 
+const API_URL = 'http://localhost:4000/graphql'
 
-export const fetchAutos = async (): Promise<AutoDTO[]> => {
-  const response = await fetch("http://localhost:4000/graphql", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+const baseHeaders = {
+  'Content-Type': 'application/json',
+}
+
+/**
+ * Generic function to perform GraphQL API fetches to the Auto service
+ */
+const autoApiFetch = async (query: string, variables?: Record<string, any>) => {
+  const response = await fetch(API_URL, {
+    method: 'POST',
+    headers: baseHeaders,
     body: JSON.stringify({
-      query: `#graphql
+      query,
+      variables,
+    }),
+  })
+
+  const data = await response.json()
+  if (!response.ok) {
+    throw new Error(data.message)
+  }
+
+  return data
+}
+
+/**
+ * Fetches the list of autos from the API
+ * @returns A promise that resolves to an array of AutoDTO objects
+ */
+export const fetchAutos = async (): Promise<AutoDTO[]> => {
+  const query = `#graphql
         query Query {
-          cars {
+          autos {
             make
             model
             year
             features
           }
-        }`,
-    }),
-  });
-  const res = await response.json();
-  return res.data.cars;
-};
+        }`
+
+  const res = await autoApiFetch(query)
+  return res.data.autos
+}
+
+/**
+ * Adds a new auto to the API
+ * @param auto Auto data without ID
+ * @returns A promise that resolves to the AutoActionResponse
+ */
+export const addAuto = async (
+  auto: Omit<AutoDTO, 'id'>
+): Promise<AutoActionResponse> => {
+  const res = await autoApiFetch(
+    `#graphql
+    mutation Mutation($make: String!, $model: String!, $year: Int!, $features: [String]) {
+      addAuto(make: $make, model: $model, year: $year, features: $features) {
+        message
+        success
+      }
+    }`,
+    auto
+  )
+  return res.data.addAuto
+}
+
+/**
+ * Deletes an auto by ID
+ * @param id The ID of the auto to delete
+ * @returns A promise that resolves to the AutoActionResponse
+ */
+export const deleteAuto = async (id: string): Promise<AutoActionResponse> => {
+  const query = `#graphql
+    mutation DeleteAuto($id: ID!) {
+      deleteAuto(id: $id) {
+        success
+        message
+      }
+    `
+
+  const response = await autoApiFetch(query, { id })
+  return response.data.deleteAuto
+}

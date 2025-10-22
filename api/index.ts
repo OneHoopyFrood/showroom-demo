@@ -1,8 +1,8 @@
-import { AutoActionResponse } from "@api/AutoActionResponse";
-import { AutoDTO } from "@api/AutoDTO";
-import { ApolloServer } from "@apollo/server";
-import { startStandaloneServer } from "@apollo/server/standalone";
-import { randomUUID } from "node:crypto";
+import { AutoActionResponse } from '@api/AutoActionResponse'
+import { AutoDTO } from '@api/AutoDTO'
+import { ApolloServer } from '@apollo/server'
+import { startStandaloneServer } from '@apollo/server/standalone'
+import { randomUUID } from 'node:crypto'
 
 const typeDefs = `#graphql
   type Auto {
@@ -24,71 +24,73 @@ const typeDefs = `#graphql
 
   type Mutation {
     addAuto(make: String!, model: String!, year: Int!, features: [String]): AutoResponse
+    deleteAuto(id: ID!): AutoResponse
+    updateAuto(id: ID!, make: String!, model: String!, year: Int!, features: [String]): AutoResponse
   }
-`;
+`
 
 const autos: AutoDTO[] = [
   {
     id: randomUUID(),
-    make: "Honda",
-    model: "Civic",
+    make: 'Honda',
+    model: 'Civic',
     year: 2022,
-    features: ["Bluetooth", "Backup Camera"],
+    features: ['Bluetooth', 'Backup Camera'],
   },
   {
     id: randomUUID(),
-    make: "Toyota",
-    model: "Camry",
+    make: 'Toyota',
+    model: 'Camry',
     year: 2021,
-    features: ["Sunroof", "Leather Seats"],
+    features: ['Sunroof', 'Leather Seats'],
   },
-];
+]
 
 const addAuto = (
   _: never,
   { make, model, year, features }: AutoDTO
 ): AutoActionResponse => {
-  autos.push({ id: randomUUID(), make, model, year, features });
+  autos.push({ id: randomUUID(), make, model, year, features })
   return {
     success: true,
-    message: "Auto added successfully",
-  };
-};
+    message: 'Auto added successfully',
+  }
+}
 
 const deleteAuto = (_: never, { id }: { id: string }): AutoActionResponse => {
-  const index = autos.findIndex((auto) => auto.id === id);
+  const index = autos.findIndex((auto) => auto.id === id)
   if (index === -1) {
     return {
       success: false,
-      message: "Auto not found",
-    };
+      message: 'Auto not found',
+    }
   }
-  autos.splice(index, 1);
+  autos.splice(index, 1)
   return {
     success: true,
-    message: "Auto deleted successfully",
-  };
-};
+    message: 'Auto deleted successfully',
+  }
+}
 
 const updateAuto = (
   _: never,
   { id, make, model, year, features }: AutoDTO
 ): AutoActionResponse => {
-  const auto = autos.find((auto) => auto.id === id);
+  const auto = autos.find((auto) => auto.id === id)
   if (!auto) {
     return {
       success: false,
-      message: "Auto not found",
-    };
+      message: 'Auto not found',
+    }
   }
-  auto.make = make;
-  auto.model = model;
-  auto.year = year;
-  auto.features = features;
+  auto.make = make
+  auto.model = model
+  auto.year = year
+  auto.features = features
   return {
     success: true,
-    message: "Auto updated successfully",
-  };
+    message: 'Auto updated successfully',
+  }
 }
 
 const resolvers = {
@@ -100,16 +102,16 @@ const resolvers = {
     deleteAuto,
     updateAuto,
   },
-};
+}
 
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-});
+})
 
 // Start the server
 startStandaloneServer(server, {
   listen: { port: 4000 },
 }).then(({ url }) => {
-  console.log(`🚀  Server ready at: ${url}`);
-});
+  console.log(`🚀  Server ready at: ${url}`)
+})
