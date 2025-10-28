@@ -1,7 +1,7 @@
-import { AutoActionResponse } from '@api/AutoActionResponse'
-import { AutoDTO } from '@api/AutoDTO'
 import { ApolloServer } from '@apollo/server'
 import { startStandaloneServer } from '@apollo/server/standalone'
+import { AutoActionResponse } from '@gql/AutoActionResponse'
+import { AutoDTO } from '@gql/AutoDTO'
 import { randomUUID } from 'node:crypto'
 
 /**

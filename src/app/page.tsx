@@ -1,6 +1,6 @@
 'use client'
 
-import { AutoDTO } from '@api/AutoDTO'
+import { AutoDTO } from '@gql/AutoDTO'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import AutoCard from './components/AutoCard'

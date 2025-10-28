@@ -1,5 +1,5 @@
-import { AutoActionResponse } from '@api/AutoActionResponse'
-import { AutoDTO } from '@api/AutoDTO'
+import { AutoActionResponse } from '@gql/AutoActionResponse'
+import { AutoDTO } from '@gql/AutoDTO'
 
 const API_URL = 'http://localhost:4000/graphql'
 

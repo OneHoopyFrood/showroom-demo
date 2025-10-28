@@ -1,4 +1,4 @@
-import { AutoDTO } from '@api/AutoDTO'
+import { AutoDTO } from '@gql/AutoDTO'
 import Image from 'next/image'
 
 interface AutoCardProps {
